@@ -25,6 +25,7 @@ https://www.elastic.co/guide/en/logstash/current/running-logstash-windows.html
 ## Экспорт справочников
 Перед экспортом журнала регистрации нужно создать словари для данных из файла 1Cv8.lgd. 
 Используется скрипт:
+
 ```lgf-to-yml.ps1 ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""<ПапкаУстановкиlogstash>\mappings""```
 
 В Результате выполнения скрипта в каталоге <ПапкаУстановкиlogstash>\mappings должны появиться файлы 
@@ -33,6 +34,7 @@ https://www.elastic.co/guide/en/logstash/current/running-logstash-windows.html
 > и т.д.
 
 Т.к. в журнале регистрации иногда появляются новые данные требуется обеспечить периодическое обновление этих данных с помощью, допустим TaskSheduler:
+
 ```powershell -Command "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-File """<ПапкаLOGSTASH>\lgf-to-yml.ps1"" """C:\Program Files\1cv8\srvinfo\reg_1541\<ИДБазы>\1Cv8Log\1cv8.lgf""" ""<ИмяБазы>"" ""<ПапкаLOGSTASH>\mappings""' ; $trigger =  New-ScheduledTaskTrigger -Daily -At 9am ; Register-ScheduledTask -Action $action -Trigger $trigger -TaskName 'Logshash export dictionary <ИмяБазы>' -Description 'Экспорт словарей данных для БД rp30 (<ИДБазы>) в папку <ПапкаLOGSTASH>'"```
 
 Скрипт lgf-to-yml.sh из "оригинальной" версии не тестировался и,наверное, не работает. Буду благодарен если кто-то доработает.
@@ -49,9 +51,9 @@ https://www.elastic.co/guide/en/logstash/current/running-logstash-windows.html
 > dictionary_path => "mappings/{ИмяБазы}_WorkServerPorts.yml" 
 
 ##  Скопируйте файлы 
-conf.d/parse.rb => <ПапкаУстановкиlogstash>/config/parse.rb
-conf.d/translate.rb => <ПапкаУстановкиlogstash>/config/translate.rb
-mapping/1Cv8Log.json => <ПапкаУстановкиlogstash>/mapping/1Cv8Log.json
+> conf.d/parse.rb => <ПапкаУстановкиlogstash>/config/parse.rb
+> conf.d/translate.rb => <ПапкаУстановкиlogstash>/config/translate.rb
+> mapping/1Cv8Log.json => <ПапкаУстановкиlogstash>/mapping/1Cv8Log.json
 
 # Проверка
 В Файле <ИмяБазы>.conf закомментируйте/удалите отправку данных в elasticsearch
@@ -87,14 +89,14 @@ mapping/1Cv8Log.json => <ПапкаУстановкиlogstash>/mapping/1Cv8Log.j
 21) ?
 
 ## 1Cv8.lgd:
-1 – пользователи;
-2 – компьютеры;
-3 – приложения;
-4 – события;
-5 – метаданные;
-6 – серверы;
-7 – основные порты;
-8 – вспомогательные порты.
+1) – пользователи;
+2) – компьютеры;
+3) – приложения;
+4) – события;
+5) – метаданные;
+6) – серверы;
+7) – основные порты;
+8) – вспомогательные порты.
 Так же встречаются пока неопознанные коды 11, 12 и 13
 
 # Оригинальное описание
@@ -104,6 +106,9 @@ https://xdd.silverbulleters.org/t/bigdata-logmanager-dlya-1s/62/143
 
 # Ссылки 
 Описание формата лога 1с почерпнуто из статей
+
 https://infostart.ru/1c/articles/182061/
+
 https://infostart.ru/public/182820/
+
 По ссылкам похоже что "старая" версия формата логов. Описание некоторых полей я не нашел.
