@@ -1,13 +1,19 @@
 # Экспорт журнала регистрации 1с в elasticsearch средствами logstash
 Это решение помогает настроить импорт журнала регистрации 1с в logstash и экспорт в elasticsearch.
+
 ## Журнал регистрации 1с 
 Решение для "старого" формата журнала регистрации (не SQLite). 
 Желательно разделить файлы журнала регистрации по дням (для вашего же удобства)
+
 ## Хранение журнала регистрации
 Файлы журнала регистрации 1с находятся на сервере 1с в папке srvinfo\reg_1541\\<идентификатор базы>\1Cv8Log
 И состоят из 2 частей:
 *.lgp - журнал регистрации
 1Cv8.lgd - словарь данных
+подробнее:
+> https://infostart.ru/1c/articles/182061/
+> https://infostart.ru/public/182820/
+
 
 # Установка elasticsearck,logstash,kibana
 https://www.elastic.co/downloads/logstash
@@ -17,9 +23,9 @@ https://www.elastic.co/downloads/logstash
 https://www.elastic.co/guide/en/logstash/current/running-logstash-windows.html
 
 ## Определить в какой папке хранится ЖР для базы:
-Открыв файл srvinfo\reg_1541\1CV8Clst.lst блокнотом - вы увидите имя базы на сервере и ее идентификатор (= папка, куда складываются логи) 
+Открыв файл C:\Program Files\1cv8\srvinfo\reg_1541\1CV8Clst.lst блокнотом - вы увидите имя базы на сервере и ее идентификатор (= папка, куда складываются логи) 
 
-> Все нижеописанные действия поможет сформировать обработка ПомошникЭкспортаЖурналаРегистрации1с. 
+> Все действия ниже поможет сформировать обработка ПомошникЭкспортаЖурналаРегистрации1с. 
 > Запустить можно в любой (даже пустой) базе.
 
 ## Экспорт справочников
@@ -33,9 +39,10 @@ https://www.elastic.co/guide/en/logstash/current/running-logstash-windows.html
 > <Имя БД>UserDescr.yml
 > и т.д.
 
-Т.к. в журнале регистрации иногда появляются новые данные требуется обеспечить периодическое обновление этих данных с помощью, допустим TaskSheduler:
+Т.к. словаре в журнала регистрации иногда появляются новые данные требуется обеспечить периодическое обновление этих данных с помощью, допустим TaskSheduler:
 
 ```powershell -Command "$action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-File """<ПапкаLOGSTASH>\lgf-to-yml.ps1"" """C:\Program Files\1cv8\srvinfo\reg_1541\<ИДБазы>\1Cv8Log\1cv8.lgf""" ""<ИмяБазы>"" ""<ПапкаLOGSTASH>\mappings""' ; $trigger =  New-ScheduledTaskTrigger -Daily -At 9am ; Register-ScheduledTask -Action $action -Trigger $trigger -TaskName 'Logshash export dictionary <ИмяБазы>' -Description 'Экспорт словарей данных для БД rp30 (<ИДБазы>) в папку <ПапкаLOGSTASH>'"```
+
 
 Скрипт lgf-to-yml.sh из "оригинальной" версии не тестировался и,наверное, не работает. Буду благодарен если кто-то доработает.
 

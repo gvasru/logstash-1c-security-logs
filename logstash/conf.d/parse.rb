@@ -1,7 +1,10 @@
 # the value of `params` is the value of the hash passed to `script_params`
 # in the logstash configuration
+
+$messagetoparseField="NODATA"
+
 def register(params)
-	@messagefield = params["messagefield"]
+	$messagetoparseField = params["messagefield"]
 end
 
 # the filter method receives an event and must return a list of events.
@@ -9,20 +12,27 @@ end
 # while creating new ones only requires you to add a new instance of
 # LogStash::Event to the returned array
 def filter(event)
-
-    @message=event.get('message')
-
+    @message=event.get($messagetoparseField)
     begin
       @parsedData=parselog(@message,1,false)
     rescue  Exception => e  
-      event.set('parselogException',e.message ) 
+      event.tag("parseException")
+      event.set('parseException',e.message ) 
+      puts "parse error "+e.message+" string "+ @message
       throw e
     end
     event.set('parsedData',@parsedData["data"])    
   	return [event]
 end
 
-def parselog(message,position,stringmode) 
+# В случае ошибки парсинга - создавать событие
+#def parseErrorEvent(source,position,stringmode) 
+#  new_custom_event = LogStash::Event.new()
+#  new_custom_event.set("cpu_test_load", 34)
+#  new_event_block.call(new_custom_event)
+#end
+
+def parselog(message,position,stringmode)
   dataToReturn = {}
   dataToReturn.store("start", position)
   arrchars=message.chars()
@@ -34,9 +44,9 @@ def parselog(message,position,stringmode)
             if stringmode == true then
               if  arrchars[position] == '"' and arrchars[position+1] != '"'
                 stringmode=false
-                 dataToReturn.store("end", position)
-                 dataToReturn.store("string", message[start,position-start])
-                 dataToReturn.store("data", message[start,position-start])
+                dataToReturn.store("end", position)
+                dataToReturn.store("string", message[start,position-start])
+                dataToReturn.store("data", message[start,position-start])
                 return  dataToReturn
               elsif arrchars[position] == '"' and arrchars[position+1] == '"'
                 position=position+2 
@@ -52,14 +62,15 @@ def parselog(message,position,stringmode)
               next
             elsif arrchars[position] == ','
               if position!=startdata 
+                 thisobj[arritem]=message[startdata,position-startdata]
                  arritem+=1
               end
               startdata=position+1 
             elsif arrchars[position] == '"' then
-              if arrchars[position+1] == '"' then
+              if arrchars[position+1] == '"' then 
                 #Если это пустая строка
-                thisobj[arritem]=""
-                position=position+2 
+                 thisobj[arritem]=""
+                 position=position+2
                 next
               else
                 obj=parselog(message,position+1,true)  
@@ -70,12 +81,12 @@ def parselog(message,position,stringmode)
               if arrchars[position]=='}' then
                 dataToReturn.store("string", message[start,position-start])
                 position=position
-                dataToReturn.store("end", position)
-                dataToReturn.store("data", thisobj)
+                 dataToReturn.store("end", position)
+                 dataToReturn.store("data", thisobj)
                 return  dataToReturn
               elsif arrchars[position]==',' then
-                startdata=position+1
-                position=position+1
+                 startdata=position+1
+                 position=position+1
                 next
               end              
             elsif arrchars[position] == '}'

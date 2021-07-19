@@ -9,7 +9,7 @@ $LgfPath=$args[0]
 
 if (!$LgfPath){
   write-host "Не указан Путь к файлу lgf." -foregroundcolor red
-  write-host "Пример параметров ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""<ПапкаЭкспорта>""]"
+  write-host "Пример параметров ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""C:\logstash\mapping""]"
   exit -1
 }
 
@@ -17,13 +17,13 @@ $dbname=$args[1]
 
 if (!$dbname){
   write-host "Не указано Имя БД" -foregroundcolor red
-  write-host "Пример параметров ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""<ПапкаЭкспорта>""]"
+  write-host "Пример параметров ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""C:\logstash\mapping""]"
   exit -1
 }
 $savepath=$args[2]
 if (!$savepath){
   write-host "Не указан Путь для сохранения" -foregroundcolor red
-  write-host "Пример параметров ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""<ПапкаЭкспорта>""]"
+  write-host "Пример параметров ""C:\Program Files\1cv8\srvinfo\reg_1541\<Идентификатор базы>\1Cv8Log\1Cv8.lgd""  ""Имя БД"" ""C:\logstash\mapping""]"
   exit -1
 }
   
