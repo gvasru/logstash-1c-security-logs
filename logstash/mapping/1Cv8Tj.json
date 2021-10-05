@@ -1,0 +1,38 @@
+{
+  "order": 0,
+  "index_patterns": [
+    "1ctj_*"
+  ],
+  "settings": {
+    "index": {
+      "number_of_shards": "2",
+      "number_of_replicas": "0",
+      "refresh_interval": "10s"
+    }
+  },
+  "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      }, 
+      "host": {
+        "type": "keyword"
+      },
+      "path": {
+        "type": "text"
+      },
+      "event": {
+        "type": "keyword"
+      },
+      "processName": {
+        "type": "keyword"
+      },
+      "message": {
+        "type": "text"
+      }      
+    }
+},
+  "aliases": {}
+}
+
+
